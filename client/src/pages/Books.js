@@ -20,7 +20,7 @@ class Books extends Component {
   }
 
   loadBooks = () => {
-    API.getBooks()
+    API.searchBooks()
       .then(res =>
         this.setState({ books: res.data, title: "", author: "", synopsis: "" })
       )
@@ -57,41 +57,39 @@ class Books extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
+          <Col size="sm-12">
             <Jumbotron>
-              <h1>What Books Should I Read?</h1>
+              <h1>
+                (React) Google Books Search
+              </h1>
+              <p className="font-weight-lighter">
+                <em>
+                Search for and save books for future reading
+                </em>
+              </p>
             </Jumbotron>
-            <form>
-              <Input
-                value={this.state.title}
-                onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
-              />
-              <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Submit Book
-              </FormBtn>
-            </form>
+            <Jumbotron>
+              <form>
+                <Input
+                  value={this.state.title}
+                  onChange={this.handleInputChange}
+                  name="search"
+                  placeholder="Enter Book Title"
+                />
+                <FormBtn
+                  disabled={!(this.state.author && this.state.title)}
+                  onClick={this.handleFormSubmit}
+                >
+                  Search Google Books
+                </FormBtn>
+              </form>
+            </Jumbotron>
           </Col>
-          <Col size="md-6 sm-12">
+          <Col size="sm-12">
             <Jumbotron>
-              <h1>Books On My List</h1>
-            </Jumbotron>
+              <h1>
+                Search Results
+              </h1>
             {this.state.books.length ? (
               <List>
                 {this.state.books.map(book => (
@@ -108,6 +106,7 @@ class Books extends Component {
             ) : (
               <h3>No Results to Display</h3>
             )}
+            </Jumbotron>
           </Col>
         </Row>
       </Container>
