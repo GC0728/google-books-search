@@ -3,28 +3,18 @@ import DeleteBtn from "../components/DeleteBtn";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
 import { Link } from "react-router-dom";
-import { Col, Row, Container } from "../components/Grid";
+import { Col, Row, Container, } from "../components/Grid";
 import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import { Input, FormBtn } from "../components/Form";
+import SearchResults from "../components/SearchResults";
 
 class Books extends Component {
   state = {
     books: [],
     title: "",
     author: "",
-    synopsis: ""
-  };
-
-  componentDidMount() {
-    this.loadBooks();
-  }
-
-  loadBooks = () => {
-    API.searchBooks()
-      .then(res =>
-        this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-      )
-      .catch(err => console.log(err));
+    synopsis: "",
+    search: ""
   };
 
   deleteBook = id => {
@@ -34,21 +24,35 @@ class Books extends Component {
   };
 
   handleInputChange = event => {
-    const { name, value } = event.target;
     this.setState({
-      [name]: value
+      search: event.target.value
     });
   };
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
-      })
-        .then(res => this.loadBooks())
+    if (this.state.search) {
+      API.searchBooks(
+        this.state.search
+      )
+        .then(res => {
+          let searchResults = res.data.items;
+          console.log(searchResults);
+          searchResults.map(searchResult => {
+            searchResult = {
+              key: searchResult.id,
+              title: searchResult.volumeInfo.title,
+              author: searchResult.volumeInfo.authors,
+              description: searchResult.volumeInfo.description,
+              image: searchResult.volumeInfo.imageLinks.smallThumbail
+            }
+            console.log(searchResults);
+            return searchResults;
+          })
+          this.setState({
+            books:searchResults
+          });
+        })
         .catch(err => console.log(err));
     }
   };
@@ -71,13 +75,12 @@ class Books extends Component {
             <Jumbotron>
               <form>
                 <Input
-                  value={this.state.title}
+                  value={this.state.value}
                   onChange={this.handleInputChange}
                   name="search"
                   placeholder="Enter Book Title"
                 />
                 <FormBtn
-                  disabled={!(this.state.author && this.state.title)}
                   onClick={this.handleFormSubmit}
                 >
                   Search Google Books
@@ -85,28 +88,15 @@ class Books extends Component {
               </form>
             </Jumbotron>
           </Col>
+        </Row>
+        <Row>
           <Col size="sm-12">
-            <Jumbotron>
-              <h1>
-                Search Results
-              </h1>
-            {this.state.books.length ? (
-              <List>
-                {this.state.books.map(book => (
-                  <ListItem key={book._id}>
-                    <Link to={"/books/" + book._id}>
-                      <strong>
-                        {book.title} by {book.author}
-                      </strong>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
-            </Jumbotron>
+            <Container fluid>
+
+              <SearchResults
+                books={this.state.books}
+              />
+            </Container>
           </Col>
         </Row>
       </Container>
