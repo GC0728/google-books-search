@@ -12,8 +12,10 @@ const SearchResults = props => {
         <li key={book.id} className="search-list list-group-item">
           <Row>
             <Col size="sm-3">
-              <img src={`"${book.volumeInfo.imageLinks.smallThumbnail}"`}
-              className="card-img" alt="..." />
+              <div className="list-overflow-container">
+              <img src={`${book.volumeInfo.imageLinks.smallThumbnail}`}
+              className="card-img" alt={book.volumeInfo.title} />
+              </div>
             </Col>
             <Col size="md-8">
               <div className="card-body">
