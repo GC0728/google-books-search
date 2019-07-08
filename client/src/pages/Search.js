@@ -9,13 +9,16 @@ import { Input, FormBtn } from "../components/Form";
 import SearchResults from "../components/SearchResults";
 
 class Books extends Component {
-  state = {
+  constructor(props) {
+    super(props);
+  this.state = {
     books: [],
     title: "",
     author: "",
     synopsis: "",
     search: ""
   };
+};
 
   deleteBook = id => {
     API.deleteBook(id)
@@ -37,20 +40,20 @@ class Books extends Component {
       )
         .then(res => {
           let searchResults = res.data.items;
-          console.log(searchResults);
+          // console.log(searchResults);
           searchResults.map(searchResult => {
             searchResult = {
               key: searchResult.id,
               title: searchResult.volumeInfo.title,
               author: searchResult.volumeInfo.authors,
-              description: searchResult.volumeInfo.description,
-              image: searchResult.volumeInfo.imageLinks.smallThumbail
+              caption: searchResult.searchInfo.textSnippet,
+              image: `"${searchResult.volumeInfo.imageLinks.smallThumbnail}"`
             }
-            console.log(searchResults);
-            return searchResults;
+            console.log(searchResult.image);
+            return searchResult;
           })
           this.setState({
-            books:searchResults
+            books: searchResults
           });
         })
         .catch(err => console.log(err));
@@ -92,9 +95,9 @@ class Books extends Component {
         <Row>
           <Col size="sm-12">
             <Container fluid>
-
               <SearchResults
                 books={this.state.books}
+                // key={this.state.books.id}
               />
             </Container>
           </Col>
